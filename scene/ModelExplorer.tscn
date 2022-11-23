@@ -1,0 +1,200 @@
+[gd_scene load_steps=11 format=3 uid="uid://dvpfndtt8epxg"]
+
+[ext_resource type="Script" path="res://scene/ModelExplorer.gd" id="1_nw81i"]
+[ext_resource type="Script" path="res://scene/CamController.gd" id="3_7quse"]
+[ext_resource type="Script" path="res://scene/UIController.gd" id="4_3e4pv"]
+[ext_resource type="Texture2D" uid="uid://dngs678q2vwu2" path="res://texture/T_ProgressCircle_BG.png" id="5_ki67k"]
+[ext_resource type="Texture2D" uid="uid://ciy2pu22x0j1w" path="res://texture/T_ProgressCircle_FG.png" id="6_18sj1"]
+[ext_resource type="Script" path="res://scene/ProgressIndicator.gd" id="7_mw4jw"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_je8ca"]
+sky_top_color = Color(0.639216, 0.294118, 0.611765, 1)
+sky_horizon_color = Color(0.541176, 0.666667, 0.811765, 1)
+ground_bottom_color = Color(0.243137, 0.45098, 0.705882, 1)
+ground_horizon_color = Color(0.32549, 0.694118, 0.917647, 1)
+
+[sub_resource type="Sky" id="Sky_h8kkh"]
+sky_material = SubResource("ProceduralSkyMaterial_je8ca")
+
+[sub_resource type="Environment" id="Environment_5wpq0"]
+background_mode = 2
+sky = SubResource("Sky_h8kkh")
+
+[sub_resource type="LabelSettings" id="LabelSettings_8uw33"]
+font_size = 18
+
+[node name="Root" type="Node3D"]
+script = ExtResource("1_nw81i")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_5wpq0")
+
+[node name="CamController" type="Node3D" parent="." node_paths=PackedStringArray("UiNode")]
+script = ExtResource("3_7quse")
+UiNode = NodePath("../Node/InfoPanel")
+
+[node name="CamRotHelper" type="Node3D" parent="CamController"]
+
+[node name="Camera3D" type="Camera3D" parent="CamController/CamRotHelper"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.81462)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="CamController/CamRotHelper/Camera3D"]
+transform = Transform3D(0.85798, -0.214782, 0.466625, -0.00966859, 0.901478, 0.432717, -0.513591, -0.375774, 0.771374, 4.30535, 3.06095, 0)
+shadow_enabled = true
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("4_3e4pv")
+
+[node name="InfoPanel" type="PanelContainer" parent="Node"]
+visible = false
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 300.0
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Node/InfoPanel"]
+layout_mode = 2
+offset_right = 300.0
+offset_bottom = 1800.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Row" type="VBoxContainer" parent="Node/InfoPanel/MarginContainer"]
+layout_mode = 2
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 292.0
+offset_bottom = 1792.0
+
+[node name="Label" type="Label" parent="Node/InfoPanel/MarginContainer/Row"]
+layout_mode = 2
+offset_right = 284.0
+offset_bottom = 29.0
+text = "Information"
+label_settings = SubResource("LabelSettings_8uw33")
+
+[node name="LoadingPanel" type="PanelContainer" parent="Node"]
+visible = false
+custom_minimum_size = Vector2(400, 200)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Node/LoadingPanel"]
+layout_mode = 2
+offset_right = 400.0
+offset_bottom = 262.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Node/LoadingPanel/MarginContainer"]
+layout_mode = 2
+offset_left = 100.0
+offset_top = 16.0
+offset_right = 300.0
+offset_bottom = 246.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Node/LoadingPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+offset_right = 200.0
+offset_bottom = 200.0
+value = 20.0
+fill_mode = 4
+texture_under = ExtResource("5_ki67k")
+texture_progress = ExtResource("6_18sj1")
+script = ExtResource("7_mw4jw")
+
+[node name="Label" type="Label" parent="Node/LoadingPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+offset_left = 62.0
+offset_top = 204.0
+offset_right = 137.0
+offset_bottom = 230.0
+size_flags_horizontal = 4
+text = "Loading..."
+
+[node name="ToolPanel" type="PanelContainer" parent="Node"]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -143.0
+offset_bottom = 93.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Node/ToolPanel"]
+layout_mode = 2
+offset_right = 143.0
+offset_bottom = 93.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Row" type="VBoxContainer" parent="Node/ToolPanel/MarginContainer"]
+layout_mode = 2
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 127.0
+offset_bottom = 77.0
+
+[node name="Label" type="Label" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
+offset_right = 111.0
+offset_bottom = 26.0
+text = "Tool"
+
+[node name="CbWireframe" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
+offset_top = 30.0
+offset_right = 111.0
+offset_bottom = 61.0
+text = "Wireframe"
+
+[node name="MessagePanel" type="PanelContainer" parent="Node"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Node/MessagePanel"]
+layout_mode = 2
+offset_right = 291.0
+offset_bottom = 58.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Label" type="Label" parent="Node/MessagePanel/MarginContainer"]
+layout_mode = 2
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 275.0
+offset_bottom = 42.0
+text = "Drop gltf/glb file into this window"
+
+[connection signal="gltf_is_loaded" from="." to="Node" method="_on_root_gltf_is_loaded"]
+[connection signal="gltf_start_to_load" from="." to="Node" method="_on_root_gltf_start_to_load"]
+[connection signal="toggled" from="Node/ToolPanel/MarginContainer/Row/CbWireframe" to="Node" method="_on_cb_wireframe_toggled"]
