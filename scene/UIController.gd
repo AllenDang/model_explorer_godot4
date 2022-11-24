@@ -68,10 +68,9 @@ func _on_root_gltf_is_loaded(success, gltf):
 		var material_array: Array[StandardMaterial3D]
 		var texture_array: Array[Texture2D]
 		
-		var add_texture_to_array = func(mat:StandardMaterial3D, texutre_field_name:String):
-			var tex:Texture2D = mat.get(texutre_field_name)
-			if tex != null and not texture_array.has(tex):
-				texture_array.append(tex)
+		var add_texture_to_array = func(texture):
+			if texture != null and not texture_array.has(texture):
+				texture_array.append(texture)
 		
 		const MAX_NAME_LENGTH = 30
 		for mesh in meshes:
@@ -95,17 +94,18 @@ func _on_root_gltf_is_loaded(success, gltf):
 					material_array.append(mat)
 					
 					# Gather texture
-					add_texture_to_array.call(mat, "albedo_texture")
-					add_texture_to_array.call(mat, "roughness_texture")
-					add_texture_to_array.call(mat, "metallic_texture")
-					add_texture_to_array.call(mat, "emission_texture")
-					add_texture_to_array.call(mat, "ao_texture")
-					add_texture_to_array.call(mat, "clearcoat_texture")
-					add_texture_to_array.call(mat, "normal_texture")
-					add_texture_to_array.call(mat, "detail_mask")
-					add_texture_to_array.call(mat, "refraction_texture")
-					add_texture_to_array.call(mat, "rim_texture")
-					add_texture_to_array.call(mat, "subsurf_scatter_texture")
+					add_texture_to_array.call(mat.albedo_texture)
+					add_texture_to_array.call(mat.roughness_texture)
+					add_texture_to_array.call(mat.metallic_texture)
+					add_texture_to_array.call(mat.emission_texture)
+					add_texture_to_array.call(mat.heightmap_texture)
+					add_texture_to_array.call(mat.ao_texture)
+					add_texture_to_array.call(mat.rim_texture)
+					add_texture_to_array.call(mat.refraction_texture)
+					add_texture_to_array.call(mat.heightmap_texture)
+					add_texture_to_array.call(mat.normal_texture)
+					add_texture_to_array.call(mat.clearcoat_texture)
+					add_texture_to_array.call(mat.subsurf_scatter_texture)
 			
 		Row.add_child(meshInfoTree)
 		
