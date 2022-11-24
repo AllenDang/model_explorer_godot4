@@ -214,19 +214,19 @@ func calc_data_size(byte_size:int) -> String:
 	var unit = "KB"
 	
 	# KB
-	var size = byte_size / 1024
+	var size = byte_size / 1024.0
 	
 	# MB
 	if size > 1024:
-		size /= 1024
+		size /= 1024.0
 		unit = "MB"
 	
 	# GB
 	if size > 1024:
-		size /= 1024
+		size /= 1024.0
 		unit = "GB"
 	
-	return "%d %s" % [size, unit]
+	return "%.2f %s" % [size, unit]
 
 func _on_cb_wireframe_toggled(button_pressed):
 	if button_pressed:
@@ -238,7 +238,10 @@ func _on_mesh_item_double_clicked(tree:Tree):
 	var meshItem:TreeItem = tree.get_selected()
 	var mesh:MeshInstance3D = meshItem.get_metadata(0)
 	if mesh != null:
-		print("got mesh %s" % mesh.name)
+		var uvLines = DrawUvTex.draw_uv_texture(mesh.mesh)
+		if uvLines.size() > 0:
+			print(uvLines.size())
+			GlobalSignal.trigger_texture_viewer.emit(uvLines)
 		
 func _on_material_item_double_clicked(tree:Tree):
 	var matItem:TreeItem = tree.get_selected()
@@ -264,10 +267,10 @@ func _on_animation_item_double_clicked(tree:Tree):
 		animationPlayer.play(anim)
 		
 
-func _show_texture_viewer(tex:Texture2D):
+func _show_texture_viewer(tex):
 	if texViewer != null:
 		texViewer.queue_free()
 			
 	texViewer = TextureViewer.instantiate()
-	texViewer.set_texture(tex)
+	texViewer.set_draw_data(tex)
 	add_child(texViewer)

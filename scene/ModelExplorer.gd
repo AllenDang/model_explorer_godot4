@@ -36,9 +36,7 @@ func _load_gltf(file:String):
 	var success = false
 	var gltf:Node = null
 	
-	if err != OK:
-		print("failed to load gltf model")
-	else:
+	if err == OK:
 		success = true
 		gltf = gltf_doc.generate_scene(gltf_state)
 		gltf.add_to_group(GLTF_GROUP)

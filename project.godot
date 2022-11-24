@@ -9,12 +9,24 @@
 config_version=5
 
 _global_script_classes=[{
+"base": "Control",
+"class": &"CustomCanvas",
+"language": &"GDScript",
+"path": "res://scene/CustomCanvas.gd"
+}, {
+"base": "Node",
+"class": &"DrawUVTex",
+"language": &"GDScript",
+"path": "res://script/DrawUVTex.gd"
+}, {
 "base": "RefCounted",
 "class": &"Worker",
 "language": &"GDScript",
 "path": "res://script/Worker.gd"
 }]
 _global_script_class_icons={
+"CustomCanvas": "",
+"DrawUVTex": "",
 "Worker": ""
 }
 
@@ -33,6 +45,7 @@ config/windows_native_icon="res://resource/icon/app_icon.ico"
 [autoload]
 
 GlobalSignal="*res://script/GlobalSignal.gd"
+DrawUvTex="*res://script/DrawUVTex.gd"
 
 [display]
 
