@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://dvpfndtt8epxg"]
+[gd_scene load_steps=14 format=3 uid="uid://dvpfndtt8epxg"]
 
 [ext_resource type="Script" path="res://scene/ModelExplorer.gd" id="1_nw81i"]
+[ext_resource type="Shader" path="res://shader/Grid.gdshader" id="2_c212q"]
 [ext_resource type="Script" path="res://scene/CamController.gd" id="3_7quse"]
 [ext_resource type="Script" path="res://scene/UIController.gd" id="4_3e4pv"]
 [ext_resource type="Texture2D" uid="uid://dngs678q2vwu2" path="res://texture/T_ProgressCircle_BG.png" id="5_ki67k"]
@@ -20,6 +21,14 @@ sky_material = SubResource("ProceduralSkyMaterial_je8ca")
 background_mode = 2
 sky = SubResource("Sky_h8kkh")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k3w7f"]
+render_priority = 0
+shader = ExtResource("2_c212q")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_6snqc"]
+material = SubResource("ShaderMaterial_k3w7f")
+size = Vector2(10000, 10000)
+
 [sub_resource type="LabelSettings" id="LabelSettings_8uw33"]
 font_size = 18
 
@@ -28,6 +37,9 @@ script = ExtResource("1_nw81i")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_5wpq0")
+
+[node name="GizmoPlane" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_6snqc")
 
 [node name="CamController" type="Node3D" parent="." node_paths=PackedStringArray("UiNode")]
 script = ExtResource("3_7quse")
@@ -42,8 +54,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.81462)
 transform = Transform3D(0.85798, -0.214782, 0.466625, -0.00966859, 0.901478, 0.432717, -0.513591, -0.375774, 0.771374, 4.30535, 3.06095, 0)
 shadow_enabled = true
 
-[node name="Node" type="Node" parent="."]
+[node name="Node" type="Node" parent="." node_paths=PackedStringArray("Grid")]
 script = ExtResource("4_3e4pv")
+Grid = NodePath("../GizmoPlane")
 
 [node name="InfoPanel" type="PanelContainer" parent="Node"]
 visible = false
@@ -138,8 +151,8 @@ grow_horizontal = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/ToolPanel"]
 layout_mode = 2
-offset_right = 166.0
-offset_bottom = 128.0
+offset_right = 172.0
+offset_bottom = 163.0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -149,29 +162,36 @@ theme_override_constants/margin_bottom = 16
 layout_mode = 2
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 150.0
-offset_bottom = 112.0
+offset_right = 156.0
+offset_bottom = 147.0
 
 [node name="Label" type="Label" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_right = 134.0
+offset_right = 140.0
 offset_bottom = 26.0
 text = "Tool"
 
 [node name="CbWireframe" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
 offset_top = 30.0
-offset_right = 134.0
+offset_right = 140.0
 offset_bottom = 61.0
-text = "Wireframe (T)"
+text = "Wireframe (W)"
 
 [node name="CbExplode" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
 offset_top = 65.0
-offset_right = 134.0
+offset_right = 140.0
 offset_bottom = 96.0
 tooltip_text = "Move all meshes away from the center to easily check how may meshes are there"
 text = "Explode (E)"
+
+[node name="CbHideGrid" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
+offset_top = 100.0
+offset_right = 140.0
+offset_bottom = 131.0
+text = "Hide Grid (G)"
 
 [node name="MessagePanel" type="PanelContainer" parent="Node"]
 anchors_preset = 8
@@ -207,3 +227,4 @@ text = "Drop gltf/glb file into this window"
 [connection signal="gltf_start_to_load" from="." to="Node" method="_on_root_gltf_start_to_load"]
 [connection signal="toggled" from="Node/ToolPanel/MarginContainer/Row/CbWireframe" to="Node" method="_on_cb_wireframe_toggled"]
 [connection signal="toggled" from="Node/ToolPanel/MarginContainer/Row/CbExplode" to="Node" method="_on_cb_explode_toggled"]
+[connection signal="toggled" from="Node/ToolPanel/MarginContainer/Row/CbHideGrid" to="Node" method="_on_cb_hide_grid_toggled"]

@@ -1,5 +1,7 @@
 extends Node
 
+@export var Grid:Node
+
 @onready var InfoPanel: PanelContainer = $InfoPanel
 @onready var ToolPanel: PanelContainer = $ToolPanel
 @onready var LoadingPanel: PanelContainer = $LoadingPanel
@@ -8,6 +10,7 @@ extends Node
 @onready var Row: VBoxContainer = $InfoPanel/MarginContainer/Row
 @onready var CbWireframe: CheckBox = $ToolPanel/MarginContainer/Row/CbWireframe
 @onready var CbExplode: CheckBox = $ToolPanel/MarginContainer/Row/CbExplode
+@onready var CbHideGrid: CheckBox = $ToolPanel/MarginContainer/Row/CbHideGrid
 
 const TextureViewer = preload("res://scene/TextureViewer.tscn")
 var texViewer
@@ -30,6 +33,9 @@ func _process(_delta):
 	
 	if Input.is_action_just_pressed("explode_meshes"):
 		CbExplode.button_pressed = not CbExplode.button_pressed
+		
+	if Input.is_action_just_pressed("toggle_grid"):
+		CbHideGrid.button_pressed = not CbHideGrid.button_pressed
 
 func _on_root_gltf_start_to_load():
 	InfoPanel.visible = false
@@ -302,3 +308,8 @@ func _on_cb_explode_toggled(button_pressed):
 				m.position = m.mesh.get_aabb().get_center() - maxAabb.get_center()
 			else:
 				m.position = Vector3.ZERO
+
+
+func _on_cb_hide_grid_toggled(button_pressed):
+	if Grid != null:
+		Grid.visible = not button_pressed
