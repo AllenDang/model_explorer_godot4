@@ -297,7 +297,6 @@ func _on_cb_explode_toggled(button_pressed):
 		var meshes:Array[Node] = n.find_children("*", "MeshInstance3D")
 		for m in meshes:
 			m = m as MeshInstance3D
-			var aabb = m.mesh.get_aabb()
 			
 			if button_pressed:
 				m.position = m.mesh.get_aabb().get_center() - maxAabb.get_center()
