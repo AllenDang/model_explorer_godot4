@@ -26,8 +26,7 @@ func draw_uv_texture(mesh: Mesh) -> PackedVector2Array:
 		else:
 			ic = uv.size()
 		
-		var i = 0
-		while i < ic:
+		for i in range(0, ic, 3):
 			for j in range(3):
 				var edge: Edge = Edge.new()
 				
@@ -45,6 +44,5 @@ func draw_uv_texture(mesh: Mesh) -> PackedVector2Array:
 				uvLines.push_back(edge.b)
 				
 				edges.append(edge)
-			i += 3
 		
 	return uvLines

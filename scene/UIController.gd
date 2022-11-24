@@ -240,7 +240,6 @@ func _on_mesh_item_double_clicked(tree:Tree):
 	if mesh != null:
 		var uvLines = DrawUvTex.draw_uv_texture(mesh.mesh)
 		if uvLines.size() > 0:
-			print(uvLines.size())
 			GlobalSignal.trigger_texture_viewer.emit(uvLines)
 		
 func _on_material_item_double_clicked(tree:Tree):
