@@ -1,7 +1,5 @@
 extends Node3D
 
-const GLTF_GROUP = "gltf group"
-
 signal gltf_start_to_load
 signal gltf_is_loaded(success:bool, gltf:Node)
 
@@ -19,7 +17,7 @@ func _on_file_dropped(files:PackedStringArray):
 			gltf_start_to_load.emit()
 			
 			# unload previous loaded scene
-			var gltf_nodes = get_tree().get_nodes_in_group(GLTF_GROUP)
+			var gltf_nodes = get_tree().get_nodes_in_group(GlobalSignal.GLTF_GROUP)
 			for n in gltf_nodes:
 				n.queue_free()
 
@@ -39,7 +37,7 @@ func _load_gltf(file:String):
 	if err == OK:
 		success = true
 		gltf = gltf_doc.generate_scene(gltf_state)
-		gltf.add_to_group(GLTF_GROUP)
+		gltf.add_to_group(GlobalSignal.GLTF_GROUP)
 		call_deferred("add_child", gltf)
 		
 	gltf_is_loaded.emit(success, gltf)

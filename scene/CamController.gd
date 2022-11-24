@@ -6,17 +6,30 @@ const PAN_SPEED = 0.005
 
 @export var UiNode: Control
 
+@onready var CamRotHelper = $CamRotHelper
+
 var enable_cam_control: bool = true
 
 func _ready():
 	var _discard = UiNode.connect("mouse_entered", _ui_mouse_entered)
 	_discard = UiNode.connect("mouse_exited", _ui_mouse_exited)
 	
+	GlobalSignal.reposition_camera.connect(_on_reposition_camera)
+	
 func _ui_mouse_entered():
 	enable_cam_control = false
 	
 func _ui_mouse_exited():
 	enable_cam_control = true
+	
+func _on_reposition_camera(aabb:AABB):
+	if aabb.size.length() > 0:
+		scale = Vector3.ONE * (aabb.size.length() * 0.2)
+	else:
+		scale = Vector3.ONE
+		
+	rotation = Vector3.ZERO
+	CamRotHelper.rotation = Vector3.ZERO
 
 func _input(event):
 	if not enable_cam_control:
@@ -26,12 +39,12 @@ func _input(event):
 		if event.button_mask == MOUSE_BUTTON_MASK_RIGHT:
 			# Rotate
 			self.rotate_y(deg_to_rad(-1 * event.get_relative().x * ROTATE_SPEED))
-			$CamRotHelper.rotate_x(deg_to_rad(-1 * event.get_relative().y * ROTATE_SPEED))
+			CamRotHelper.rotate_x(deg_to_rad(-1 * event.get_relative().y * ROTATE_SPEED))
 
 			#Stop rotation over top or bottom
-			var camera_rot = $CamRotHelper.rotation
+			var camera_rot = CamRotHelper.rotation
 			camera_rot.x = clamp(camera_rot.x, -90, 90)
-			$CamRotHelper.rotation = camera_rot
+			CamRotHelper.rotation = camera_rot
 		elif event.button_mask == MOUSE_BUTTON_MASK_MIDDLE:
 			# Pan
 			self.translate(Vector3(

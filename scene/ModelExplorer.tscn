@@ -138,8 +138,8 @@ grow_horizontal = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/ToolPanel"]
 layout_mode = 2
-offset_right = 143.0
-offset_bottom = 93.0
+offset_right = 166.0
+offset_bottom = 128.0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -149,21 +149,29 @@ theme_override_constants/margin_bottom = 16
 layout_mode = 2
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 127.0
-offset_bottom = 77.0
+offset_right = 150.0
+offset_bottom = 112.0
 
 [node name="Label" type="Label" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_right = 111.0
+offset_right = 134.0
 offset_bottom = 26.0
 text = "Tool"
 
 [node name="CbWireframe" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
 offset_top = 30.0
-offset_right = 111.0
+offset_right = 134.0
 offset_bottom = 61.0
-text = "Wireframe"
+text = "Wireframe (T)"
+
+[node name="CbExplode" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
+offset_top = 65.0
+offset_right = 134.0
+offset_bottom = 96.0
+tooltip_text = "Move all meshes away from the center to easily check how may meshes are there"
+text = "Explode (E)"
 
 [node name="MessagePanel" type="PanelContainer" parent="Node"]
 anchors_preset = 8
@@ -198,3 +206,4 @@ text = "Drop gltf/glb file into this window"
 [connection signal="gltf_is_loaded" from="." to="Node" method="_on_root_gltf_is_loaded"]
 [connection signal="gltf_start_to_load" from="." to="Node" method="_on_root_gltf_start_to_load"]
 [connection signal="toggled" from="Node/ToolPanel/MarginContainer/Row/CbWireframe" to="Node" method="_on_cb_wireframe_toggled"]
+[connection signal="toggled" from="Node/ToolPanel/MarginContainer/Row/CbExplode" to="Node" method="_on_cb_explode_toggled"]

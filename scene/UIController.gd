@@ -7,6 +7,7 @@ extends Node
 @onready var MsgLabel: Label = $MessagePanel/MarginContainer/Label
 @onready var Row: VBoxContainer = $InfoPanel/MarginContainer/Row
 @onready var CbWireframe: CheckBox = $ToolPanel/MarginContainer/Row/CbWireframe
+@onready var CbExplode: CheckBox = $ToolPanel/MarginContainer/Row/CbExplode
 
 const TextureViewer = preload("res://scene/TextureViewer.tscn")
 var texViewer
@@ -18,12 +19,17 @@ var animationPlayer:AnimationPlayer
 
 const DYNAMIC_CONTROL_GROUP = "dynamic control"
 
+var maxAabb:AABB
+
 func _ready():
 	GlobalSignal.trigger_texture_viewer.connect(_show_texture_viewer)
 
 func _process(_delta):
-	if Input.is_action_just_released("toggle_wireframe"):
+	if Input.is_action_just_pressed("toggle_wireframe"):
 		CbWireframe.button_pressed = not CbWireframe.button_pressed
+	
+	if Input.is_action_just_pressed("explode_meshes"):
+		CbExplode.button_pressed = not CbExplode.button_pressed
 
 func _on_root_gltf_start_to_load():
 	InfoPanel.visible = false
@@ -75,6 +81,13 @@ func _on_root_gltf_is_loaded(success, gltf):
 		const MAX_NAME_LENGTH = 30
 		for mesh in meshes:
 			mesh = mesh as MeshInstance3D
+			
+			# Calculate max aabb
+			var aabb = mesh.mesh.get_aabb()
+			if maxAabb.position > aabb.position:
+				maxAabb.position = aabb.position
+			if maxAabb.end < aabb.end:
+				maxAabb.end = aabb.end
 			
 			var short_name = String(mesh.name)
 			
@@ -238,9 +251,11 @@ func _on_mesh_item_double_clicked(tree:Tree):
 	var meshItem:TreeItem = tree.get_selected()
 	var mesh:MeshInstance3D = meshItem.get_metadata(0)
 	if mesh != null:
-		var uvLines = DrawUvTex.draw_uv_texture(mesh.mesh)
-		if uvLines.size() > 0:
-			GlobalSignal.trigger_texture_viewer.emit(uvLines)
+#		var uvLines = DrawUvTex.draw_uv_texture(mesh.mesh)
+#		if uvLines.size() > 0:
+#			GlobalSignal.trigger_texture_viewer.emit(uvLines)
+		
+		GlobalSignal.reposition_camera.emit(mesh.mesh.get_aabb())
 		
 func _on_material_item_double_clicked(tree:Tree):
 	var matItem:TreeItem = tree.get_selected()
@@ -273,3 +288,18 @@ func _show_texture_viewer(tex):
 	texViewer = TextureViewer.instantiate()
 	texViewer.set_draw_data(tex)
 	add_child(texViewer)
+
+
+func _on_cb_explode_toggled(button_pressed):
+	var nodes = get_tree().get_nodes_in_group(GlobalSignal.GLTF_GROUP)
+			
+	for n in nodes:
+		var meshes:Array[Node] = n.find_children("*", "MeshInstance3D")
+		for m in meshes:
+			m = m as MeshInstance3D
+			var aabb = m.mesh.get_aabb()
+			
+			if button_pressed:
+				m.position = m.mesh.get_aabb().get_center() - maxAabb.get_center()
+			else:
+				m.position = Vector3.ZERO
