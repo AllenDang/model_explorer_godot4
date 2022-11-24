@@ -20,7 +20,7 @@ func _ready():
 		_setup_material_property(materialView)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	if Input.is_action_just_pressed("close_popup"):
 		queue_free()
 
@@ -33,12 +33,12 @@ func _on_material_property_double_clicked(tree:Tree):
 	if tex != null:
 		GlobalSignal.trigger_texture_viewer.emit(tex)
 
-func _create_property(root:TreeItem, name:String, value):
+func _create_property(root:TreeItem, pname:String, value):
 	if value == null:
 		return
 		
 	var item:TreeItem = MatTree.create_item(root)
-	item.set_text(0, name)
+	item.set_text(0, pname)
 	
 	if value is Texture2D:
 		var img = value.get_image() as Image
