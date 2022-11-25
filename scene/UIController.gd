@@ -85,6 +85,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 				texture_array.append(texture)
 		
 		const MAX_NAME_LENGTH = 30
+
 		for mesh in meshes:
 			mesh = mesh as MeshInstance3D
 			
@@ -106,8 +107,8 @@ func _on_root_gltf_is_loaded(success, gltf):
 			meshItem.set_tooltip_text(0, mesh.name)
 			meshItem.set_metadata(0, mesh)
 			
-			# Gather material
 			for si in mesh.mesh.get_surface_count():
+				# Gather material
 				var mat = mesh.get_active_material(si) as StandardMaterial3D
 				if not material_array.has(mat):
 					material_array.append(mat)
@@ -257,11 +258,11 @@ func _on_mesh_item_double_clicked(tree:Tree):
 	var meshItem:TreeItem = tree.get_selected()
 	var mesh:MeshInstance3D = meshItem.get_metadata(0)
 	if mesh != null:
-#		var uvLines = DrawUvTex.draw_uv_texture(mesh.mesh)
-#		if uvLines.size() > 0:
-#			GlobalSignal.trigger_texture_viewer.emit(uvLines)
+		var uvLines = MeshExt.draw_uv_texture(mesh.mesh)
+		if uvLines.size() > 0:
+			GlobalSignal.trigger_texture_viewer.emit(uvLines)
 		
-		GlobalSignal.reposition_camera.emit(mesh.mesh.get_aabb())
+#		GlobalSignal.reposition_camera.emit(mesh.mesh.get_aabb())
 		
 func _on_material_item_double_clicked(tree:Tree):
 	var matItem:TreeItem = tree.get_selected()
