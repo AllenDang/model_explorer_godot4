@@ -24,6 +24,11 @@ const DYNAMIC_CONTROL_GROUP = "dynamic control"
 
 var maxAabb:AABB
 
+class MeshInfo:
+	var name:String
+	var faceCount:int
+	var mesh:MeshInstance3D
+
 func _ready():
 	GlobalSignal.trigger_texture_viewer.connect(_show_texture_viewer)
 
@@ -62,6 +67,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 	var meshes:Array[Node] = gltf.find_children("*", "MeshInstance3D")
 	
 	if meshes.size() > 0:
+		# Create tree panel
 		var meshInfoTree:Tree = Tree.new()
 		meshInfoTree.add_to_group(DYNAMIC_CONTROL_GROUP)
 		meshInfoTree.columns = 1
@@ -77,15 +83,10 @@ func _on_root_gltf_is_loaded(success, gltf):
 		var meshParent:TreeItem = meshInfoTree.create_item()
 
 		# Mesh section
-		var material_array: Array[StandardMaterial3D]
-		var texture_array: Array[Texture2D]
+		var meshArray:Array[MeshInfo]
 		
-		var add_texture_to_array = func(texture):
-			if texture != null and not texture_array.has(texture):
-				texture_array.append(texture)
+		const MAX_NAME_LENGTH = 20
 		
-		const MAX_NAME_LENGTH = 30
-
 		for mesh in meshes:
 			mesh = mesh as MeshInstance3D
 			
@@ -95,7 +96,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 				maxAabb.position = aabb.position
 			if maxAabb.end < aabb.end:
 				maxAabb.end = aabb.end
-			
+				
 			var short_name = String(mesh.name)
 			
 			if short_name.length() > MAX_NAME_LENGTH:
@@ -106,7 +107,17 @@ func _on_root_gltf_is_loaded(success, gltf):
 			meshItem.set_text(0, short_name)
 			meshItem.set_tooltip_text(0, mesh.name)
 			meshItem.set_metadata(0, mesh)
-			
+
+		Row.add_child(meshInfoTree)
+		
+		var material_array: Array[StandardMaterial3D]
+		var texture_array: Array[Texture2D]
+		
+		var add_texture_to_array = func(texture):
+			if texture != null and not texture_array.has(texture):
+				texture_array.append(texture)
+
+		for mesh in meshes:
 			for si in mesh.mesh.get_surface_count():
 				# Gather material
 				var mat = mesh.get_active_material(si) as StandardMaterial3D
@@ -126,8 +137,6 @@ func _on_root_gltf_is_loaded(success, gltf):
 					add_texture_to_array.call(mat.normal_texture)
 					add_texture_to_array.call(mat.clearcoat_texture)
 					add_texture_to_array.call(mat.subsurf_scatter_texture)
-			
-		Row.add_child(meshInfoTree)
 		
 		# Material section
 		if material_array.size() > 0:
@@ -229,6 +238,14 @@ func _on_root_gltf_is_loaded(success, gltf):
 			
 			Row.add_child(animationTree)
 		
+	# Create convex collision
+	for mesh in meshes:
+		mesh = mesh as MeshInstance3D
+		mesh.create_convex_collision()
+		
+		var staticBody:StaticBody3D = mesh.find_child("%s_col" % mesh.name)
+		staticBody.mouse_entered.connect(_on_mesh_mouse_entered.bind(mesh))
+		staticBody.mouse_exited.connect(_on_mesh_mouse_exited.bind(mesh))
 
 func calc_data_size(byte_size:int) -> String:
 	var unit = "KB"
@@ -314,3 +331,9 @@ func _on_cb_explode_toggled(button_pressed):
 func _on_cb_hide_grid_toggled(button_pressed):
 	if Grid != null:
 		Grid.visible = not button_pressed
+
+func _on_mesh_mouse_entered(mesh: MeshInstance3D):
+	MeshExt.mesh_create_outline(mesh)
+	
+func _on_mesh_mouse_exited(mesh: MeshInstance3D):
+	MeshExt.mesh_remove_outline(mesh)
