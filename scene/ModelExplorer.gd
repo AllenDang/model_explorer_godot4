@@ -29,6 +29,7 @@ func _on_file_dropped(files:PackedStringArray):
 func _load_gltf(file:String):
 	var gltf_doc = GLTFDocument.new()
 	var gltf_state = GLTFState.new()
+	
 	var err = gltf_doc.append_from_file(file, gltf_state)
 	
 	var success = false
@@ -39,5 +40,5 @@ func _load_gltf(file:String):
 		gltf = gltf_doc.generate_scene(gltf_state)
 		gltf.add_to_group(GlobalSignal.GLTF_GROUP)
 		call_deferred("add_child", gltf)
-		
+	
 	gltf_is_loaded.emit(success, gltf)

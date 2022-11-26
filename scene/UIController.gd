@@ -76,6 +76,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 		meshInfoTree.mouse_filter = Control.MOUSE_FILTER_PASS
 		meshInfoTree.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		
+		meshInfoTree.item_selected.connect(_on_mesh_item_selected.bind(meshInfoTree))
 		meshInfoTree.item_activated.connect(_on_mesh_item_double_clicked.bind(meshInfoTree))
 		
 		meshInfoTree.set_column_title(0, "Mesh (%d)" % meshes.size())
@@ -243,7 +244,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 		mesh = mesh as MeshInstance3D
 		mesh.create_convex_collision()
 		
-		var staticBody:StaticBody3D = mesh.find_child("%s_col" % mesh.name)
+		var staticBody:StaticBody3D = mesh.get_node("%s_col" % mesh.name)
 		staticBody.mouse_entered.connect(_on_mesh_mouse_entered.bind(mesh))
 		staticBody.mouse_exited.connect(_on_mesh_mouse_exited.bind(mesh))
 
@@ -270,6 +271,11 @@ func _on_cb_wireframe_toggled(button_pressed):
 		get_viewport().debug_draw = Viewport.DEBUG_DRAW_WIREFRAME
 	else:
 		get_viewport().debug_draw = Viewport.DEBUG_DRAW_DISABLED
+
+func _on_mesh_item_selected(tree:Tree):
+	var meshItem:TreeItem = tree.get_selected()
+	MeshExt.mesh_clear_all_outline()
+	MeshExt.mesh_create_outline(meshItem.get_metadata(0))
 
 func _on_mesh_item_double_clicked(tree:Tree):
 	var meshItem:TreeItem = tree.get_selected()
