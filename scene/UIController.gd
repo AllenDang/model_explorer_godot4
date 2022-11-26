@@ -18,16 +18,21 @@ var texViewer
 const MaterialViewer = preload("res://scene/MaterialViewer.tscn")
 var matViewer
 
-var animationPlayer:AnimationPlayer
-
 const DYNAMIC_CONTROL_GROUP = "dynamic control"
 
 var maxAabb:AABB
+
+var animationPlayers: Array[Node]
 
 class MeshInfo:
 	var name:String
 	var faceCount:int
 	var mesh:MeshInstance3D
+	
+class AnimationInfo:
+	var name:String
+	var length:float
+	var player:AnimationPlayer
 
 func _ready():
 	GlobalSignal.trigger_texture_viewer.connect(_show_texture_viewer)
@@ -62,7 +67,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 	ToolPanel.visible = true
 	LoadingPanel.visible = false
 	
-	animationPlayer = gltf.find_child("AnimationPlayer")
+	animationPlayers = gltf.find_children("*", "AnimationPlayer")
 
 	var meshes:Array[Node] = gltf.find_children("*", "MeshInstance3D")
 	
@@ -111,33 +116,47 @@ func _on_root_gltf_is_loaded(success, gltf):
 
 		Row.add_child(meshInfoTree)
 		
-		var material_array: Array[StandardMaterial3D]
-		var texture_array: Array[Texture2D]
+		var material_array: Array[Material]
+		var texture_array: Array[Variant]
 		
 		var add_texture_to_array = func(texture):
 			if texture != null and not texture_array.has(texture):
 				texture_array.append(texture)
 
 		for mesh in meshes:
+			# Gather material
 			for si in mesh.mesh.get_surface_count():
-				# Gather material
-				var mat = mesh.get_active_material(si) as StandardMaterial3D
+				var mat = mesh.get_active_material(si) as Material
 				if not material_array.has(mat):
 					material_array.append(mat)
-					
-					# Gather texture
-					add_texture_to_array.call(mat.albedo_texture)
-					add_texture_to_array.call(mat.roughness_texture)
-					add_texture_to_array.call(mat.metallic_texture)
-					add_texture_to_array.call(mat.emission_texture)
-					add_texture_to_array.call(mat.heightmap_texture)
-					add_texture_to_array.call(mat.ao_texture)
-					add_texture_to_array.call(mat.rim_texture)
-					add_texture_to_array.call(mat.refraction_texture)
-					add_texture_to_array.call(mat.heightmap_texture)
-					add_texture_to_array.call(mat.normal_texture)
-					add_texture_to_array.call(mat.clearcoat_texture)
-					add_texture_to_array.call(mat.subsurf_scatter_texture)
+
+					if mat is BaseMaterial3D:
+						# Gather texture
+						add_texture_to_array.call(mat.albedo_texture)
+						add_texture_to_array.call(mat.roughness_texture)
+						add_texture_to_array.call(mat.metallic_texture)
+						add_texture_to_array.call(mat.emission_texture)
+						add_texture_to_array.call(mat.heightmap_texture)
+						add_texture_to_array.call(mat.ao_texture)
+						add_texture_to_array.call(mat.rim_texture)
+						add_texture_to_array.call(mat.refraction_texture)
+						add_texture_to_array.call(mat.heightmap_texture)
+						add_texture_to_array.call(mat.normal_texture)
+						add_texture_to_array.call(mat.clearcoat_texture)
+						add_texture_to_array.call(mat.subsurf_scatter_texture)
+					elif mat is ShaderMaterial:
+						var parameters : Array[String] = [
+							"_MainTex",
+							"_ShadeTexture",
+							"_ReceiveShadowTexture",
+							"_ShadingGradeTexture",
+							"_RimTexture",
+							"_SphereAdd",
+							"_EmissionMap",
+						]
+						for parameter_name in parameters:
+							var parameter = (mat as ShaderMaterial).get_shader_parameter(parameter_name)
+							add_texture_to_array.call(parameter)
 		
 		# Material section
 		if material_array.size() > 0:
@@ -148,29 +167,52 @@ func _on_root_gltf_is_loaded(success, gltf):
 			materialInfoTree.hide_root = true
 			materialInfoTree.mouse_filter = Control.MOUSE_FILTER_PASS
 			materialInfoTree.size_flags_vertical = Control.SIZE_EXPAND_FILL
-			
+
 			materialInfoTree.item_activated.connect(_on_material_item_double_clicked.bind(materialInfoTree))
-			
+
 			materialInfoTree.set_column_title(0, "Material (%d)" % material_array.size())
-			
+
 			var matParent:TreeItem = materialInfoTree.create_item()
-			
+
 			for mat in material_array:
-				mat = mat as StandardMaterial3D
-				
 				var matItem:TreeItem = materialInfoTree.create_item(matParent)
 				matItem.set_text(0, mat.resource_name)
 				matItem.set_metadata(0, mat)
-				
+
 				var img:Image
-				if mat.albedo_texture != null:
-					matItem.set_text(0, mat.resource_name)
-					
-					img = mat.albedo_texture.get_image()
-					img.resize(32, 32)
-				else:
-					img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
-					img.fill(mat.albedo_color)
+				
+				if mat is StandardMaterial3D:
+					if mat.albedo_texture != null:
+						matItem.set_text(0, mat.resource_name)
+
+						img = mat.albedo_texture.get_image()
+						img.resize(32, 32)
+					else:
+						img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+						img.fill(mat.albedo_color)
+				elif mat is ShaderMaterial:
+					var parameters : Array[String] = [
+						"_MainTex",
+						"_ShadeTexture",
+						"_ReceiveShadowTexture",
+						"_ShadingGradeTexture",
+						"_RimTexture",
+						"_SphereAdd",
+						"_EmissionMap",
+					]
+
+					for parameter_name in parameters:
+						if img != null:
+							break
+							
+						var parameter : Variant = (mat as ShaderMaterial).get_shader_parameter(parameter_name)
+						if parameter is Image and parameter_name == "_MainTex":
+							matItem.set_text(0, parameter_name.trim_prefix("_").capitalize())
+							img = mat.albedo_texture.get_image()
+							img.resize(32, 32)
+						elif parameter is Image:
+							img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+							img.fill(parameter)
 					
 				matItem.set_icon(0, ImageTexture.create_from_image(img))
 				
@@ -185,58 +227,83 @@ func _on_root_gltf_is_loaded(success, gltf):
 			textureInfoTree.hide_root = true
 			textureInfoTree.mouse_filter = Control.MOUSE_FILTER_PASS
 			textureInfoTree.size_flags_vertical = Control.SIZE_EXPAND_FILL
-			
+
 			textureInfoTree.item_activated.connect(_on_texture_double_clicked.bind(textureInfoTree))
-			
+
 			textureInfoTree.set_column_title(0, "Texture (%d)" % texture_array.size())
-			
+
 			var texParent = textureInfoTree.create_item()
-			
+
 			for tex in texture_array:
-				tex = tex as Texture2D
-				var img = tex.get_image()
-				img.resize(50, 50)
-				
-				var texItem:TreeItem = textureInfoTree.create_item(texParent)
-				texItem.set_icon(0, ImageTexture.create_from_image(img))
-				texItem.set_text(0, "[%d x %d] %s" % [tex.get_width(), tex.get_height(), calc_data_size(tex.get_image().get_data().size())])
-				texItem.set_metadata(0, tex)
+				if tex is Texture2D:
+					var img = (tex as Texture2D).get_image()
+					img.resize(50, 50)
+
+					var texItem:TreeItem = textureInfoTree.create_item(texParent)
+					texItem.set_icon(0, ImageTexture.create_from_image(img))
+					texItem.set_text(0, "[%d x %d] %s" % [tex.get_width(), tex.get_height(), calc_data_size(tex.get_image().get_data().size())])
+					texItem.set_metadata(0, tex)
+				elif tex is Image:
+					var img : Image = tex
+					img.resize(50, 50)
+
+					var texItem:TreeItem = textureInfoTree.create_item(texParent)
+					texItem.set_icon(0, ImageTexture.create_from_image(img))
+					texItem.set_text(0, "[%d x %d] %s" % [tex.get_width(), tex.get_height(), calc_data_size(tex.get_image().get_data().size())])
+					texItem.set_metadata(0, tex)
 				
 			
 			Row.add_child(textureInfoTree)
 	
-	if animationPlayer != null:
-		var animationArray:Array[String]
+	for animationPlayer in animationPlayers:
+		if animationPlayer == null:
+			continue
+			
+		var animationArray:Array[AnimationInfo]
 		
 		var animLibList:Array[StringName] = animationPlayer.get_animation_library_list()
 		for animLibName in animLibList:
 			var animLib:AnimationLibrary = animationPlayer.get_animation_library(animLibName)
 			var animList:Array[StringName] = animLib.get_animation_list()
-			for animName in animList:
-				if String(animLibName).is_empty():
-					animationArray.append(String(animName))
-				else:
-					animationArray.append("%s/%s" % [animLibName, animName])
 			
+			for animName in animList:
+				# Get animation length
+				var anim:Animation = animationPlayer.get_animation(animName)
+				var animLength = anim.length
+				
+				var playableAnimName = String(animName)
+				if not String(animLibName).is_empty():
+					playableAnimName = "%s/%s" % [animLibName, animName]
+					
+				var animInfo = AnimationInfo.new()
+				animInfo.name = playableAnimName
+				animInfo.length = animLength
+				animInfo.player = animationPlayer
+				
+				animationArray.append(animInfo)
+
 		if animationArray.size() > 0:
 			var animationTree:Tree = Tree.new()
 			animationTree.add_to_group(DYNAMIC_CONTROL_GROUP)
-			animationTree.columns = 1
+			animationTree.columns = 2
 			animationTree.column_titles_visible = true
 			animationTree.hide_root = true
 			animationTree.mouse_filter = Control.MOUSE_FILTER_PASS
 			animationTree.size_flags_vertical = Control.SIZE_EXPAND_FILL
-			
+
 			animationTree.item_activated.connect(_on_animation_item_double_clicked.bind(animationTree))
-			
+
 			animationTree.set_column_title(0, "Animation (%d)" % animationArray.size())
-			
+			animationTree.select_mode = Tree.SELECT_ROW
+
 			var animRoot = animationTree.create_item()
-			
+
 			for anim in animationArray:
 				var animItem:TreeItem = animationTree.create_item(animRoot)
-				animItem.set_text(0, anim)
-			
+				animItem.set_text(0, anim.name)
+				animItem.set_metadata(0, anim)
+				animItem.set_text(1, "%.2f sec" % anim.length)
+
 			Row.add_child(animationTree)
 		
 	# Create convex collision
@@ -304,12 +371,16 @@ func _on_texture_double_clicked(tree:Tree):
 	if tex != null:
 		GlobalSignal.trigger_texture_viewer.emit(tex)
 		
+
 func _on_animation_item_double_clicked(tree:Tree):
 	var animItem:TreeItem = tree.get_selected()
-	var anim:String = animItem.get_text(0)
-	if animationPlayer != null:
-		animationPlayer.play(anim)
-		
+	
+	var animInfo = animItem.get_metadata(0) as AnimationInfo
+	
+	var animationPlayer:AnimationPlayer = animInfo.player
+	if animationPlayer != null and animationPlayer.has_animation(animInfo.name):
+		animationPlayer.queue(animInfo.name)
+
 
 func _show_texture_viewer(tex):
 	if texViewer != null:
