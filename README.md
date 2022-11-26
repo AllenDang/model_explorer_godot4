@@ -1,7 +1,9 @@
 # Model explorer
 A gltf model viewer made by Godot 4
 
-![screenshot](https://github.com/AllenDang/model_explorer_godot4/raw/main/screenshots/Screenshot.png)
+![screenshot](https://github.com/AllenDang/model_explorer_godot4/raw/main/screenshots/Screenshot4.png)
+
+![Screenshot2](https://github.com/AllenDang/model_explorer_godot4/raw/main/screenshots/Screenshot3.png)
 
 ## Features
 
