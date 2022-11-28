@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dvpfndtt8epxg"]
+[gd_scene load_steps=18 format=3 uid="uid://dvpfndtt8epxg"]
 
 [ext_resource type="Script" path="res://scene/ModelExplorer.gd" id="1_nw81i"]
 [ext_resource type="Shader" path="res://shader/Grid.gdshader" id="2_c212q"]
@@ -22,32 +22,20 @@ sky_material = SubResource("ProceduralSkyMaterial_je8ca")
 background_mode = 2
 sky = SubResource("Sky_h8kkh")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_owteg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_afdat"]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("2_r1lf8")
 shader_parameter/color = Color(0, 1, 0, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kkdsu"]
-render_priority = 0
-shader = ExtResource("2_r1lf8")
-shader_parameter/color = Color(0, 1, 0, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ve0qf"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8j3lf"]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("2_r1lf8")
 shader_parameter/color = Color(1, 0, 0, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_8kksp"]
-render_priority = 0
-shader = ExtResource("2_r1lf8")
-shader_parameter/color = Color(1, 0, 0, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_85fhw"]
-render_priority = 0
-shader = ExtResource("2_r1lf8")
-shader_parameter/color = Color(0, 0, 1, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1mdgr"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gutj8"]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("2_r1lf8")
 shader_parameter/color = Color(0, 0, 1, 1)
@@ -74,7 +62,7 @@ environment = SubResource("Environment_5wpq0")
 [node name="LineY" type="CSGCylinder3D" parent="OriginPoint"]
 radius = 0.005
 sides = 4
-material = SubResource("ShaderMaterial_owteg")
+material = SubResource("ShaderMaterial_afdat")
 
 [node name="Arrow" type="CSGCylinder3D" parent="OriginPoint/LineY"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000117779, 1.00167, -0.000938177)
@@ -82,13 +70,13 @@ radius = 0.03
 height = 0.1
 sides = 4
 cone = true
-material = SubResource("ShaderMaterial_kkdsu")
+material = SubResource("ShaderMaterial_afdat")
 
 [node name="LineX" type="CSGCylinder3D" parent="OriginPoint"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
 radius = 0.005
 sides = 4
-material = SubResource("ShaderMaterial_ve0qf")
+material = SubResource("ShaderMaterial_8j3lf")
 
 [node name="Arrow" type="CSGCylinder3D" parent="OriginPoint/LineX"]
 transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0.00167441, -0.999882, -0.000938177)
@@ -96,13 +84,13 @@ radius = 0.03
 height = 0.1
 sides = 4
 cone = true
-material = SubResource("ShaderMaterial_8kksp")
+material = SubResource("ShaderMaterial_8j3lf")
 
 [node name="LineZ" type="CSGCylinder3D" parent="OriginPoint"]
 transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 0, 0)
 radius = 0.005
 sides = 4
-material = SubResource("ShaderMaterial_85fhw")
+material = SubResource("ShaderMaterial_gutj8")
 
 [node name="Arrow" type="CSGCylinder3D" parent="OriginPoint/LineZ"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0.00167441, 0.999062, -0.000117779)
@@ -110,7 +98,7 @@ radius = 0.03
 height = 0.1
 sides = 4
 cone = true
-material = SubResource("ShaderMaterial_1mdgr")
+material = SubResource("ShaderMaterial_gutj8")
 
 [node name="GizmoPlane" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_6snqc")

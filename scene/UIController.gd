@@ -49,6 +49,9 @@ func _process(_delta):
 		
 	if Input.is_action_just_pressed("toggle_grid"):
 		CbHideGrid.button_pressed = not CbHideGrid.button_pressed
+		
+	if Input.is_action_just_pressed("close_popup"):
+		MeshExt.mesh_clear_all_outline()
 
 func _on_root_gltf_start_to_load():
 	InfoPanel.visible = false
@@ -415,6 +418,9 @@ func _on_cb_hide_grid_toggled(button_pressed):
 
 func _on_mesh_clicked(camera: Node, event: InputEvent, position: Vector3, normal: Vector3, shape_idx: int, mesh: MeshInstance3D):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if meshViewer != null:
+			meshViewer.queue_free()
+			
 		if MeshExt.mesh_has_outline(mesh):
 			MeshExt.mesh_remove_outline(mesh)
 			return
