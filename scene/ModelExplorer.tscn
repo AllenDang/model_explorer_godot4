@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://dvpfndtt8epxg"]
+[gd_scene load_steps=21 format=3 uid="uid://dvpfndtt8epxg"]
 
 [ext_resource type="Script" path="res://scene/ModelExplorer.gd" id="1_nw81i"]
 [ext_resource type="Shader" path="res://shader/Grid.gdshader" id="2_c212q"]
+[ext_resource type="Shader" path="res://shader/UnlitColor.gdshader" id="2_r1lf8"]
 [ext_resource type="Script" path="res://scene/CamController.gd" id="3_7quse"]
 [ext_resource type="Script" path="res://scene/UIController.gd" id="4_3e4pv"]
 [ext_resource type="Texture2D" uid="uid://dngs678q2vwu2" path="res://texture/T_ProgressCircle_BG.png" id="5_ki67k"]
@@ -21,6 +22,36 @@ sky_material = SubResource("ProceduralSkyMaterial_je8ca")
 background_mode = 2
 sky = SubResource("Sky_h8kkh")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_owteg"]
+render_priority = 0
+shader = ExtResource("2_r1lf8")
+shader_parameter/color = Color(0, 1, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kkdsu"]
+render_priority = 0
+shader = ExtResource("2_r1lf8")
+shader_parameter/color = Color(0, 1, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ve0qf"]
+render_priority = 0
+shader = ExtResource("2_r1lf8")
+shader_parameter/color = Color(1, 0, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8kksp"]
+render_priority = 0
+shader = ExtResource("2_r1lf8")
+shader_parameter/color = Color(1, 0, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_85fhw"]
+render_priority = 0
+shader = ExtResource("2_r1lf8")
+shader_parameter/color = Color(0, 0, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1mdgr"]
+render_priority = 0
+shader = ExtResource("2_r1lf8")
+shader_parameter/color = Color(0, 0, 1, 1)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k3w7f"]
 render_priority = 0
 shader = ExtResource("2_c212q")
@@ -37,6 +68,49 @@ script = ExtResource("1_nw81i")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_5wpq0")
+
+[node name="OriginPoint" type="Node3D" parent="."]
+
+[node name="LineY" type="CSGCylinder3D" parent="OriginPoint"]
+radius = 0.005
+sides = 4
+material = SubResource("ShaderMaterial_owteg")
+
+[node name="Arrow" type="CSGCylinder3D" parent="OriginPoint/LineY"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000117779, 1.00167, -0.000938177)
+radius = 0.03
+height = 0.1
+sides = 4
+cone = true
+material = SubResource("ShaderMaterial_kkdsu")
+
+[node name="LineX" type="CSGCylinder3D" parent="OriginPoint"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+radius = 0.005
+sides = 4
+material = SubResource("ShaderMaterial_ve0qf")
+
+[node name="Arrow" type="CSGCylinder3D" parent="OriginPoint/LineX"]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0.00167441, -0.999882, -0.000938177)
+radius = 0.03
+height = 0.1
+sides = 4
+cone = true
+material = SubResource("ShaderMaterial_8kksp")
+
+[node name="LineZ" type="CSGCylinder3D" parent="OriginPoint"]
+transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 0, 0)
+radius = 0.005
+sides = 4
+material = SubResource("ShaderMaterial_85fhw")
+
+[node name="Arrow" type="CSGCylinder3D" parent="OriginPoint/LineZ"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0.00167441, 0.999062, -0.000117779)
+radius = 0.03
+height = 0.1
+sides = 4
+cone = true
+material = SubResource("ShaderMaterial_1mdgr")
 
 [node name="GizmoPlane" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_6snqc")
@@ -66,6 +140,7 @@ offset_right = 300.0
 grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/InfoPanel"]
+layout_mode = 2
 offset_right = 300.0
 offset_bottom = 1800.0
 theme_override_constants/margin_left = 8
@@ -74,12 +149,14 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="Row" type="VBoxContainer" parent="Node/InfoPanel/MarginContainer"]
+layout_mode = 2
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 292.0
 offset_bottom = 1792.0
 
 [node name="Label" type="Label" parent="Node/InfoPanel/MarginContainer/Row"]
+layout_mode = 2
 offset_right = 284.0
 offset_bottom = 29.0
 text = "Information"
@@ -101,6 +178,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/LoadingPanel"]
+layout_mode = 2
 offset_right = 400.0
 offset_bottom = 262.0
 theme_override_constants/margin_left = 16
@@ -109,6 +187,7 @@ theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node/LoadingPanel/MarginContainer"]
+layout_mode = 2
 offset_left = 100.0
 offset_top = 16.0
 offset_right = 300.0
@@ -117,6 +196,7 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="Node/LoadingPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_right = 200.0
 offset_bottom = 200.0
 value = 20.0
@@ -126,6 +206,7 @@ texture_progress = ExtResource("6_18sj1")
 script = ExtResource("7_mw4jw")
 
 [node name="Label" type="Label" parent="Node/LoadingPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_left = 62.0
 offset_top = 204.0
 offset_right = 137.0
@@ -143,6 +224,7 @@ offset_bottom = 93.0
 grow_horizontal = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/ToolPanel"]
+layout_mode = 2
 offset_right = 172.0
 offset_bottom = 163.0
 theme_override_constants/margin_left = 16
@@ -151,23 +233,27 @@ theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="Row" type="VBoxContainer" parent="Node/ToolPanel/MarginContainer"]
+layout_mode = 2
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 156.0
 offset_bottom = 147.0
 
 [node name="Label" type="Label" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
 offset_right = 140.0
 offset_bottom = 26.0
 text = "Tool"
 
 [node name="CbWireframe" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
 offset_top = 30.0
 offset_right = 140.0
 offset_bottom = 61.0
 text = "Wireframe (W)"
 
 [node name="CbExplode" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
 offset_top = 65.0
 offset_right = 140.0
 offset_bottom = 96.0
@@ -175,6 +261,7 @@ tooltip_text = "Move all meshes away from the center to easily check how may mes
 text = "Explode (E)"
 
 [node name="CbHideGrid" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
+layout_mode = 2
 offset_top = 100.0
 offset_right = 140.0
 offset_bottom = 131.0
@@ -194,6 +281,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/MessagePanel"]
+layout_mode = 2
 offset_right = 291.0
 offset_bottom = 58.0
 theme_override_constants/margin_left = 16
@@ -202,6 +290,7 @@ theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="Label" type="Label" parent="Node/MessagePanel/MarginContainer"]
+layout_mode = 2
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 275.0
