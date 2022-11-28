@@ -38,6 +38,10 @@ func mesh_clear_all_outline():
 	for n in nodes:
 		n.queue_free()
 
+func mesh_has_outline(mesh: MeshInstance3D) -> bool:
+	var outline = mesh.get_node(OUTLINE)
+	return outline != null
+
 func mesh_create_outline(mesh: MeshInstance3D):
 	var outline = mesh.get_node(OUTLINE)
 	

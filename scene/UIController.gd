@@ -318,8 +318,6 @@ func _on_root_gltf_is_loaded(success, gltf):
 		
 		var staticBody:StaticBody3D = mesh.get_node("%s_col" % mesh.name)
 		staticBody.input_event.connect(_on_mesh_clicked.bind(mesh))
-		staticBody.mouse_entered.connect(_on_mesh_mouse_entered.bind(mesh))
-		staticBody.mouse_exited.connect(_on_mesh_mouse_exited.bind(mesh))
 
 func calc_data_size(byte_size:int) -> String:
 	var unit = "KB"
@@ -417,6 +415,13 @@ func _on_cb_hide_grid_toggled(button_pressed):
 
 func _on_mesh_clicked(camera: Node, event: InputEvent, position: Vector3, normal: Vector3, shape_idx: int, mesh: MeshInstance3D):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if MeshExt.mesh_has_outline(mesh):
+			MeshExt.mesh_remove_outline(mesh)
+			return
+			
+		MeshExt.mesh_clear_all_outline()
+		MeshExt.mesh_create_outline(mesh)
+		
 		if meshViewer != null:
 			meshViewer.queue_free()
 		
@@ -434,9 +439,3 @@ func _on_mesh_clicked(camera: Node, event: InputEvent, position: Vector3, normal
 		meshViewer.position = pos
 
 		add_child(meshViewer)
-
-func _on_mesh_mouse_entered(mesh: MeshInstance3D):
-	MeshExt.mesh_create_outline(mesh)
-	
-func _on_mesh_mouse_exited(mesh: MeshInstance3D):
-	MeshExt.mesh_remove_outline(mesh)
