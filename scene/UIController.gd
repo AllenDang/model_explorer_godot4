@@ -27,6 +27,8 @@ var maxAabb:AABB
 
 var animationPlayers: Array[Node]
 
+var _originalPosDic: Dictionary
+
 class MeshInfo:
 	var name:String
 	var faceCount:int
@@ -58,6 +60,8 @@ func _on_root_gltf_start_to_load():
 	ToolPanel.visible = false
 	MsgPanel.visible = false
 	LoadingPanel.visible = true
+	
+	_originalPosDic.clear()
 	
 	var dyna_controls = get_tree().get_nodes_in_group(DYNAMIC_CONTROL_GROUP)
 	for ctl in dyna_controls:
@@ -103,6 +107,10 @@ func _on_root_gltf_is_loaded(success, gltf):
 		
 		for mesh in meshes:
 			mesh = mesh as MeshInstance3D
+			
+			# Record original positin if it is not ZERO in order to restore after explode
+			if not mesh.position.is_zero_approx():
+				_originalPosDic[mesh.get_instance_id()] = mesh.position
 			
 			# Calculate max aabb
 			var aabb = mesh.mesh.get_aabb()
@@ -407,9 +415,15 @@ func _on_cb_explode_toggled(button_pressed):
 			m = m as MeshInstance3D
 			
 			if button_pressed:
-				m.position = m.mesh.get_aabb().get_center() - maxAabb.get_center()
+				if m.position.is_zero_approx():
+					m.position = m.get_aabb().get_center() - maxAabb.get_center()
+				else:
+					m.position *= 3.0
 			else:
-				m.position = Vector3.ZERO
+				if _originalPosDic.has(m.get_instance_id()):
+					m.position = _originalPosDic[m.get_instance_id()]
+				else:
+					m.position = Vector3.ZERO
 
 
 func _on_cb_hide_grid_toggled(button_pressed):
