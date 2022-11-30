@@ -29,9 +29,11 @@ var animationPlayers: Array[Node]
 
 var _originalPosDic: Dictionary
 
+var _faceCountDic: Dictionary
+
 class MeshInfo:
 	var name:String
-	var faceCount:int
+	var vertexCount:int
 	var mesh:MeshInstance3D
 	
 class AnimationInfo:
@@ -62,22 +64,26 @@ func _on_root_gltf_start_to_load():
 	LoadingPanel.visible = true
 	
 	_originalPosDic.clear()
+	_faceCountDic.clear()
 	
 	var dyna_controls = get_tree().get_nodes_in_group(DYNAMIC_CONTROL_GROUP)
 	for ctl in dyna_controls:
 		ctl.queue_free()
 
-func _on_root_gltf_is_loaded(success, gltf):
+func _on_root_gltf_is_loaded(success, gltf, faceCountDic:Dictionary):
 	Input.action_press("close_popup")
 	
 	if not success:
 		MsgLabel.text = "Failed to load model..."
+		LoadingPanel.visible = false
 		MsgPanel.visible = true
 		return
 		
 	InfoPanel.visible = true
 	ToolPanel.visible = true
 	LoadingPanel.visible = false
+	
+	_faceCountDic = faceCountDic
 	
 	animationPlayers = gltf.find_children("*", "AnimationPlayer")
 
@@ -87,7 +93,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 		# Create tree panel
 		var meshInfoTree:Tree = Tree.new()
 		meshInfoTree.add_to_group(DYNAMIC_CONTROL_GROUP)
-		meshInfoTree.columns = 1
+		meshInfoTree.columns = 2
 		meshInfoTree.column_titles_visible = true
 		meshInfoTree.hide_root = true
 		meshInfoTree.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -97,6 +103,7 @@ func _on_root_gltf_is_loaded(success, gltf):
 		meshInfoTree.item_activated.connect(_on_mesh_item_double_clicked.bind(meshInfoTree))
 		
 		meshInfoTree.set_column_title(0, "Mesh (%d)" % meshes.size())
+		meshInfoTree.set_column_title(1, "Face count")
 		
 		var meshParent:TreeItem = meshInfoTree.create_item()
 
@@ -119,7 +126,19 @@ func _on_root_gltf_is_loaded(success, gltf):
 			if maxAabb.end < aabb.end:
 				maxAabb.end = aabb.end
 				
-			var short_name = String(mesh.name)
+			var meshInfo = MeshInfo.new()
+			meshInfo.name = mesh.name
+
+			if _faceCountDic.has(mesh.name):
+				meshInfo.vertexCount = _faceCountDic[mesh.name]
+			meshInfo.mesh = mesh
+			
+			meshArray.append(meshInfo)
+			
+		meshArray.sort_custom(func(a, b): return a.vertexCount > b.vertexCount)
+		
+		for mi in meshArray:
+			var short_name = String(mi.name)
 			
 			if short_name.length() > MAX_NAME_LENGTH:
 				short_name = short_name.substr(0, MAX_NAME_LENGTH) + "..."
@@ -127,8 +146,9 @@ func _on_root_gltf_is_loaded(success, gltf):
 			var meshItem:TreeItem = meshInfoTree.create_item(meshParent)
 
 			meshItem.set_text(0, short_name)
-			meshItem.set_tooltip_text(0, mesh.name)
-			meshItem.set_metadata(0, mesh)
+			meshItem.set_tooltip_text(0, mi.name)
+			meshItem.set_text(1, "%d" % mi.vertexCount)
+			meshItem.set_metadata(0, mi.mesh)
 
 		Row.add_child(meshInfoTree)
 		
@@ -377,6 +397,7 @@ func _on_material_item_double_clicked(tree:Tree):
 			matViewer.queue_free()
 		
 		matViewer = MaterialViewer.instantiate()
+		matViewer.add_to_group(DYNAMIC_CONTROL_GROUP)
 		matViewer.set_material_view(mat)
 		add_child(matViewer)
 
@@ -402,6 +423,7 @@ func _show_texture_viewer(tex):
 		texViewer.queue_free()
 			
 	texViewer = TextureViewer.instantiate()
+	texViewer.add_to_group(DYNAMIC_CONTROL_GROUP)
 	texViewer.set_draw_data(tex)
 	add_child(texViewer)
 
@@ -446,7 +468,11 @@ func _on_mesh_clicked(camera: Node, event: InputEvent, position: Vector3, normal
 			meshViewer.queue_free()
 		
 		meshViewer = MeshInfoViewer.instantiate()
-		meshViewer.set_mesh(mesh)
+		meshViewer.add_to_group(DYNAMIC_CONTROL_GROUP)
+		var faceCount = 0
+		if _faceCountDic.has(mesh.name):
+			faceCount = _faceCountDic[mesh.name]
+		meshViewer.set_data(mesh, faceCount)
 		
 		var pos = event.position + Vector2(60, -100)
 		# Prevent window out of screen

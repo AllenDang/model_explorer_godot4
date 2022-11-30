@@ -1,7 +1,7 @@
 extends Node3D
 
 signal gltf_start_to_load
-signal gltf_is_loaded(success:bool, gltf:Node)
+signal gltf_is_loaded(success:bool, gltf:Node, faceCountDic:Dictionary)
 
 const Worker = preload("res://script/Worker.gd")
 var worker: Worker
@@ -32,6 +32,32 @@ func _load_gltf(file:String):
 	
 	var err = gltf_doc.append_from_file(file, gltf_state)
 	
+	var faceCountDic:Dictionary
+	
+	var nodes = gltf_state.json["nodes"]
+	var meshes = gltf_state.json["meshes"]
+	var accessors = gltf_state.json["accessors"]
+	
+	var i = 1
+	for node in nodes:
+		var name = "Empty#%d" % i
+		if node.has("name"):
+			name = node["name"].replace(".", "")
+		i += 1
+		
+		if not node.has("mesh"):
+			continue
+			
+		var mesh = meshes[node["mesh"]]
+		
+		var indicesCount = 0
+		for primitive in mesh["primitives"]:
+			var indices = primitive["indices"]
+			var a = accessors[indices]
+			indicesCount += a["count"]
+			
+		faceCountDic[name] = indicesCount / 3
+	
 	var success = false
 	var gltf:Node = null
 	
@@ -41,4 +67,4 @@ func _load_gltf(file:String):
 		gltf.add_to_group(GlobalSignal.GLTF_GROUP)
 		call_deferred("add_child", gltf)
 	
-	gltf_is_loaded.emit(success, gltf)
+	gltf_is_loaded.emit(success, gltf, faceCountDic)

@@ -9,9 +9,11 @@ extends PanelContainer
 @onready var BtnViewUV:Button = $VBoxContainer/MarginContainer/VBoxContainer/BtnViewUV
 
 var _mesh:MeshInstance3D
+var _faceCount:int
 
-func set_mesh(mesh:MeshInstance3D):
+func set_data(mesh:MeshInstance3D, faceCount:int):
 	_mesh = mesh
+	_faceCount = faceCount
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -23,7 +25,7 @@ func _ready():
 		shortName = shortName.substr(0, 20)
 		
 	TitleLabel.text = shortName
-	LbFaceCount.text = "Face count: %d" % MeshExt.face_count(_mesh.mesh)
+	LbFaceCount.text = "Face count: %d" % _faceCount
 	
 	LbPos.text = "Pos: %s" % _mesh.position
 	

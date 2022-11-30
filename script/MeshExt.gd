@@ -22,15 +22,6 @@ func draw_uv_texture(mesh: Mesh) -> PackedVector2Array:
 		
 	return uvLines
 
-func face_count(mesh: Mesh) -> int:
-	var face_count : int = 0
-	for si in mesh.get_surface_count():
-		var mesh_data_tool : MeshDataTool = MeshDataTool.new()
-		mesh_data_tool.create_from_surface(mesh, si)
-		face_count = face_count + mesh_data_tool.get_face_count()
-	return face_count
-
-
 const OUTLINE = "Outline"
 
 func mesh_clear_all_outline():
