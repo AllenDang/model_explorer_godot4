@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dvpfndtt8epxg"]
+[gd_scene load_steps=19 format=3 uid="uid://dvpfndtt8epxg"]
 
 [ext_resource type="Script" path="res://scene/ModelExplorer.gd" id="1_nw81i"]
 [ext_resource type="Shader" path="res://shader/Grid.gdshader" id="2_c212q"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scene/UIController.gd" id="4_3e4pv"]
 [ext_resource type="Texture2D" uid="uid://dngs678q2vwu2" path="res://texture/T_ProgressCircle_BG.png" id="5_ki67k"]
 [ext_resource type="Texture2D" uid="uid://ciy2pu22x0j1w" path="res://texture/T_ProgressCircle_FG.png" id="6_18sj1"]
+[ext_resource type="Theme" uid="uid://3n58c5iseefm" path="res://scene/Theme.theme" id="6_ee8my"]
 [ext_resource type="Script" path="res://scene/ProgressIndicator.gd" id="7_mw4jw"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_je8ca"]
@@ -126,11 +127,10 @@ anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 300.0
 grow_vertical = 2
+theme = ExtResource("6_ee8my")
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/InfoPanel"]
 layout_mode = 2
-offset_right = 300.0
-offset_bottom = 1800.0
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
@@ -138,15 +138,9 @@ theme_override_constants/margin_bottom = 8
 
 [node name="Row" type="VBoxContainer" parent="Node/InfoPanel/MarginContainer"]
 layout_mode = 2
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 292.0
-offset_bottom = 1792.0
 
 [node name="Label" type="Label" parent="Node/InfoPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_right = 284.0
-offset_bottom = 29.0
 text = "Information"
 label_settings = SubResource("LabelSettings_8uw33")
 
@@ -167,8 +161,6 @@ grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/LoadingPanel"]
 layout_mode = 2
-offset_right = 400.0
-offset_bottom = 262.0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -176,17 +168,11 @@ theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node/LoadingPanel/MarginContainer"]
 layout_mode = 2
-offset_left = 100.0
-offset_top = 16.0
-offset_right = 300.0
-offset_bottom = 246.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="Node/LoadingPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-offset_right = 200.0
-offset_bottom = 200.0
 value = 20.0
 fill_mode = 4
 texture_under = ExtResource("5_ki67k")
@@ -195,10 +181,6 @@ script = ExtResource("7_mw4jw")
 
 [node name="Label" type="Label" parent="Node/LoadingPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-offset_left = 62.0
-offset_top = 204.0
-offset_right = 137.0
-offset_bottom = 230.0
 size_flags_horizontal = 4
 text = "Loading..."
 
@@ -213,8 +195,6 @@ grow_horizontal = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/ToolPanel"]
 layout_mode = 2
-offset_right = 172.0
-offset_bottom = 163.0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -222,37 +202,22 @@ theme_override_constants/margin_bottom = 16
 
 [node name="Row" type="VBoxContainer" parent="Node/ToolPanel/MarginContainer"]
 layout_mode = 2
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 156.0
-offset_bottom = 147.0
 
 [node name="Label" type="Label" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_right = 140.0
-offset_bottom = 26.0
 text = "Tool"
 
 [node name="CbWireframe" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_top = 30.0
-offset_right = 140.0
-offset_bottom = 61.0
 text = "Wireframe (W)"
 
 [node name="CbExplode" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_top = 65.0
-offset_right = 140.0
-offset_bottom = 96.0
 tooltip_text = "Move all meshes away from the center to easily check how may meshes are there"
 text = "Explode (E)"
 
 [node name="CbHideGrid" type="CheckBox" parent="Node/ToolPanel/MarginContainer/Row"]
 layout_mode = 2
-offset_top = 100.0
-offset_right = 140.0
-offset_bottom = 131.0
 text = "Hide Grid (G)"
 
 [node name="MessagePanel" type="PanelContainer" parent="Node"]
@@ -270,8 +235,6 @@ grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Node/MessagePanel"]
 layout_mode = 2
-offset_right = 291.0
-offset_bottom = 58.0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -279,10 +242,6 @@ theme_override_constants/margin_bottom = 16
 
 [node name="Label" type="Label" parent="Node/MessagePanel/MarginContainer"]
 layout_mode = 2
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 275.0
-offset_bottom = 42.0
 text = "Drop gltf/glb file into this window"
 
 [connection signal="gltf_is_loaded" from="." to="CamController" method="_on_root_gltf_is_loaded"]

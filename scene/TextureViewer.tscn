@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://gd52rvrq5aam"]
+[gd_scene load_steps=4 format=3 uid="uid://gd52rvrq5aam"]
 
+[ext_resource type="Theme" uid="uid://3n58c5iseefm" path="res://scene/Theme.theme" id="1_f76n6"]
 [ext_resource type="Script" path="res://scene/TextureViewer.gd" id="1_hbv6i"]
 [ext_resource type="Script" path="res://scene/CustomCanvas.gd" id="2_enmbk"]
 
@@ -16,6 +17,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_f76n6")
 script = ExtResource("1_hbv6i")
 
 [node name="Row" type="VBoxContainer" parent="."]
